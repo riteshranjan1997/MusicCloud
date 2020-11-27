@@ -1,3 +1,4 @@
+const { date, string, number } = require("joi");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -44,6 +45,9 @@ const albumsSchema = new Schema(
     album_description:{
       type: String,
     },
+    album_realese:{
+      type: String,
+    }
   },
   {
     versionKey: false,

@@ -2,7 +2,7 @@ import {
     LOGIN_USERS_REQUEST, LOGIN_USERS_SUCCESS, LOGIN_USERS_FAILURE,
     UPDATE_USER_DETAILS_REQUEST, UPDATE_USER_DETAILS_SUCCESS, UPDATE_USER_DETAILS_FAILURE,
     LOGOUT_USER, REMOVE_ERROR,
-} from "./actionType"
+} from "./ActionTypes"
 
 const savedUser = JSON.parse(localStorage.getItem('savedUser')) || {};
 const savedAccessToken = JSON.parse(localStorage.getItem('savedAccessToken')) || "";

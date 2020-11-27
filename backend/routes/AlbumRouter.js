@@ -13,7 +13,7 @@ const {
 } = require("../controllers/AlbumController");
 
 
-router.get("/api/serach", getAlbumSearch);
+router.get("/api/search", getAlbumSearch);
 router.get("/api/albums",   getAlbums);
 router.get("/api/album/:id", getAlbumData);
 

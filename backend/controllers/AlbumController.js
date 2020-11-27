@@ -1,55 +1,122 @@
 const Albums = require("../models/AlbumsModel");
 
-
 // for searching the albums
 const getAlbumSearch = async (req, res) => {
-  console.log(req.body.title)
   try {
-    const Albums = await Albums.find({ album_title: req.body.title });
-    if (!Albums) {
-      return res.status(400).send('Albums not found')
+    let album;
+    // filter part
+    if (req.query.filter) {
+      album = await Albums.find({
+        album_title: req.body.title,
+        album_genre: req.query.filter,
+      }).then((data) => data);
+    } else {
+      album = await Albums.find({ album_title: req.body.title }).then(
+        (data) => data
+      );
     }
-    else {
-      res.status(200).json(Albums)
+    // check for data
+    // if (Album.length === 0) {
+    //   res.status(400).json({error:true, message:"Albums not found"});
+    // }
+    // sorting
+    if (req.query.sortby) {
+      console.log("true");
+      if (req.query.sortby === "asc") {
+        album = album.sort((a, b) => a.album_realese - b.album_realese);
+      }
+      if (req.query.sortby === "desc") {
+        album = album.sort((a, b) => b.album_realese - a.album_realese);
+      }
     }
+    // pagenation
+    let limit = req.query.limit || 10;
+    let page = req.query.page || 1;
+
+    let start_index = (page - 1) * limit;
+    let end_index = page * limit;
+    album = album.slice(start_index, end_index);
+    return res.status(200).json({ error: false, data: album });
   } catch (err) {
-    res.status(400).json(err)
+    res.status(400).json(err);
   }
-}
+};
 
 //get all albums data
 const getAlbums = async (req, res) => {
+  //
 
-    const page = Number.parseInt(req.query.page);
-    const limit = Number.parseInt(req.query.limit);
-
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-
-    const results = {};
-
-    if (endIndex < (await Albums.countDocuments().exec())) {
-        results.next = {
-            page: page + 1,
-            limit: limit,
-        };
+  try {
+    let album;
+    // filter part
+    if (req.query.filter) {
+      album = await Albums.find({
+        album_genre: req.query.filter,
+      }).then((data) => data);
+    } else {
+      album = await Albums.find().then((data) => data);
     }
-
-    if (startIndex > 0) {
-        results.prev = {
-            page: page - 1,
-            limit: limit,
-        };
+    console.log(album, "before check");
+    // check for data
+    // if (Album.length === 0) {
+    //   res.status(400).json({error:true, message:"Albums not found"});
+    // }
+    console.log(album, "before sorting");
+    // sorting
+    if (req.query.sortby) {
+      console.log("true");
+      if (req.query.sortby === "asc") {
+        album = album.sort((a, b) => a.album_realese - b.album_realese);
+      }
+      if (req.query.sortby === "desc") {
+        album = album.sort((a, b) => b.album_realese - a.album_realese);
+      }
     }
+    console.log(album, "after sorting");
+    // pagenation
+    let limit = req.query.limit || 10;
+    let page = req.query.page || 1;
 
-    results.totalItem = await Albums.countDocuments()
+    let start_index = (page - 1) * limit;
+    let end_index = page * limit;
+    album = album.slice(start_index, end_index);
+    return res.status(200).json({ error: false, data: album });
+  } catch (err) {
+    res.status(400).json(err);
+  }
 
-    try {
-        results.current = await Albums.find().limit(limit).skip(startIndex).exec();
-        res.status(200).json(results);
-    } catch (e) {
-        res.status(400).json({ message: e.message });
-    }
+  //
+
+  // const page = Number.parseInt(req.query.page);
+  // const limit = Number.parseInt(req.query.limit);
+
+  // const startIndex = (page - 1) * limit;
+  // const endIndex = page * limit;
+
+  // const results = {};
+
+  // if (endIndex < (await Albums.countDocuments().exec())) {
+  //   results.next = {
+  //     page: page + 1,
+  //     limit: limit,
+  //   };
+  // }
+
+  // if (startIndex > 0) {
+  //   results.prev = {
+  //     page: page - 1,
+  //     limit: limit,
+  //   };
+  // }
+
+  // results.totalItem = await Albums.countDocuments();
+
+  // try {
+  //   results.current = await Albums.find().limit(limit).skip(startIndex).exec();
+  //   res.status(200).json(results);
+  // } catch (e) {
+  //   res.status(400).json({ message: e.message });
+  // }
 };
 
 //get single album data
@@ -61,17 +128,18 @@ const getAlbumData = (req, res) => {
       if (data) {
         res.status(200).json(data);
       } else {
-        res.status(404).json({ message: "No Such album Found" });
+        res.status(404).json({ error: true, message: "No Such album Found" });
       }
     })
     .catch((err) =>
-      res.status(404).json({ message: "No Such album Found", error: err })
+      res
+        .status(404)
+        .json({ message: "No Such album Found", error: true, details: err })
     );
 };
 
 // add new album
 const addAlbum = (req, res) => {
-
   // if (req.body.name === "" || !req.body.name) {
   //   res.status(400).json({ message: "name can't be empty" });
   //   return;
@@ -114,14 +182,8 @@ const addAlbum = (req, res) => {
 
 //edit album data
 const editAlbumData = (req, res) => {
-
   // let query = req.body.id
-
- 
-
-  
   //   Albums.findOne({ album_id: query }).then(data => {
-      
   //     data.save().then(() => res.status(200).json({ status: "Success", message: "Student data updated!" })).catch(err => res.status(403).json({ message: "something went wrong" }))
   //   }).catch(err => res.status(403).json({ message: "something went wrong", q: err }))
   // }
@@ -155,7 +217,6 @@ const addSong = (req, res) => {
   //     return;
   //   }
   // });
-
   // if (req.body.name === "" || !req.body.name) {
   //   res.status(400).json({ message: "name can't be empty" });
   //   return;
@@ -179,7 +240,6 @@ const addSong = (req, res) => {
   //     city: req.body.city,
   //     gender: req.body.gender,
   //   });
-
   //   data
   //     .save()
   //     .then(() =>
@@ -194,10 +254,8 @@ const addSong = (req, res) => {
 
 //edit song data
 const editSongData = (req, res) => {
-
   // let query1 = req.body.email
   // let query2 = req.params.email
-
   // if (query1 === query2) {
   //   Students.findOne({ email: query1 }).then(data => {
   //     data.name = req.body.name
@@ -240,10 +298,6 @@ module.exports = {
   editSongData,
   deleteSong,
 };
-
-
-
-
 
 // app.get("/api/students", paginatedResults(Students), (req, res) => {
 //   res.json(res.pagination);

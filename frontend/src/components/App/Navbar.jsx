@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -7,10 +7,11 @@ import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import Button from "@material-ui/core/Button";
+import  {Modal,Popover,Divider,} from "@material-ui/core"
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-import { logoutUser } from "../../redux/Auth/action";
+import { logoutUser } from "../../redux/Auth/Action";
 import LoginModel from "./LoginModel";
 
 const useStyles = makeStyles((theme) => ({
@@ -74,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PrimarySearchAppBar() {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [logingModelStatus, setlogingModelStatus] = React.useState(false);
 
   const handleLoginModelOpen = () => {
@@ -86,14 +88,14 @@ export default function PrimarySearchAppBar() {
 
   const loginModel = <LoginModel />;
 
-  useEffect(() => {
-    return axios
-      .get(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${addressquery}.json?limit=5&access_token=pk.eyJ1Ijoic291bmRhcnlhbWVjc2UiLCJhIjoiY2toMmUxZHBoMGJtdDJ3cGNqOWhmbTJqaiJ9.sZeF_rzMTfs2fPBA4JsHxQ`
-      )
-      .then((res) => setsuggestedAddress(res.data.features))
-      .catch((err) => console.log(err));
-  }, [addressquery]);
+  // useEffect(() => {
+  //   return axios
+  //     .get(
+  //       `https://api.mapbox.com/geocoding/v5/mapbox.places/${addressquery}.json?limit=5&access_token=pk.eyJ1Ijoic291bmRhcnlhbWVjc2UiLCJhIjoiY2toMmUxZHBoMGJtdDJ3cGNqOWhmbTJqaiJ9.sZeF_rzMTfs2fPBA4JsHxQ`
+  //     )
+  //     .then((res) => setsuggestedAddress(res.data.features))
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   return (
     <>
@@ -139,7 +141,7 @@ export default function PrimarySearchAppBar() {
             </div>
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
-            <div>
+            {/* <div>
                 {isAuth ? (
                   <div>
                     <OverlayTrigger
@@ -295,7 +297,7 @@ export default function PrimarySearchAppBar() {
                     Sign in
                   </button>
                 ) : null}
-              </div>
+              </div> */}
             </div>
           </Toolbar>
         </AppBar>

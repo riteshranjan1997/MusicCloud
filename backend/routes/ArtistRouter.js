@@ -6,7 +6,7 @@ const {
     editUser,
 } = require("../controllers/ArtistController");
 
-router.get("/login", loginUser);
+router.post("/login", loginUser);
 router.post("/editprofile", editUser);
 
 module.exports = router;
